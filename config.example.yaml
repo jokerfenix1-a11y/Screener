@@ -1,0 +1,47 @@
+# Скопируйте этот файл в config.yaml и заполните telegram.
+
+telegram:
+  bot_token: ""          # токен от @BotFather, например 123456:ABC-DEF...
+  chat_id: ""            # ваш id (через @userinfobot) или id канала вида -100xxxxxxxxxx
+  send_raw_signals: true # слать первичный сигнал даже в режиме confirm
+
+timezone: "Asia/Shanghai"
+
+exchanges: [binance, bybit]
+
+ws:
+  binance: "wss://fstream.binance.com/stream"
+  bybit: "wss://stream.bybit.com/v5/public/linear"
+
+# Правила сигнала — восстановлены по 10 сигналам исходного бота
+detector:
+  min_volume_usd: 250000      # минимум объёма в окне, USDT
+  min_pct_of_day: 10          # % от суточного объёма (без самого всплеска)
+  max_window_sec: 900         # окно до 15 минут
+  min_price_change_pct: 3     # рост цены в окне, %
+  side_threshold: 0.65        # доля покупок ≥ 65% → «покупают», ≤ 35% → «продают»
+  cooldown_min: 60            # не повторять сигнал по монете чаще
+  min_vol24h_usd: 0           # фильтр по суточному объёму (0 = без фильтра)
+  max_vol24h_usd: 0           # 0 = без ограничения
+  exclude_symbols: [BTCUSDT, ETHUSDT]
+
+# Риск: маржа = risk_pct от депозита, стоп = ликвидация → убыток не больше 1R
+risk:
+  deposit_usdt: 1000
+  risk_pct: 1                 # % депозита на сделку = изолированная маржа
+  leverage: 10                # возьмите из бэктеста
+  take_profit_pct: 5          # тейк в % движения цены
+  maintenance_margin_pct: 0.5 # поддерживающая маржа (для мелких монет бывает 1–2%)
+  taker_fee_pct: 0.05
+  slippage_pct: 0.1
+  entry_mode: both            # signal | confirm | both
+  confirm_wait_min: 15        # сколько ждать подтверждения после сигнала
+
+backtest:
+  days: 30
+  entry_modes: [signal, confirm]
+  leverages: [5, 8, 10, 15, 20]
+  take_profits_pct: [3, 5, 8, 12]
+  max_hold_min: 1440          # закрыть по времени через сутки
+  min_trades: 20
+  max_liq_pct: 15             # рекомендовать только настройки, где ликвидаций ≤ 15% сделок
